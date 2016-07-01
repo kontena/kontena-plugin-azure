@@ -4,6 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 group :development do
-  gem "kontena-cli", path: "~/Code/release/kontena-0.14.1/cli/"
+  gem "kontena-cli", path: "./kontena/cli/"
   gem 'rspec'
 end
