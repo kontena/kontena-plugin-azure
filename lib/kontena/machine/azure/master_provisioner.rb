@@ -41,13 +41,10 @@ module Kontena
               opts[:subnet] = 'subnet-1'
             end
 
-            userdata_vars = {
+            userdata_vars = opts.merge(
                 ssl_cert: ssl_cert,
-                auth_server: opts[:auth_server],
-                version: opts[:version],
-                vault_secret: opts[:vault_secret],
-                vault_iv: opts[:vault_iv]
-            }
+                server_name: cloud_service_name.sub('kontena-master-', '')
+            )
 
             params = {
                 vm_name: vm_name,
@@ -86,8 +83,12 @@ module Kontena
             sleep 5 until master_running?
           end
 
-          puts "Kontena Master is now running at #{master_url}"
-          puts "Use #{"kontena login #{master_url}".colorize(:light_black)} to complete Kontena Master setup"
+          puts "Kontena Master is now running at #{master_url}".colorize(:green)
+          {
+            name: cloud_service_name.sub('kontena-master-', ''),
+            public_ip: virtual_machine.ipaddress,
+            code: opts[:initial_admin_code]
+          }
         end
 
         def erb(template, vars)
