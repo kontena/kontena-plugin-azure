@@ -4,8 +4,6 @@ module Kontena::Plugin::Azure::Master
   class CreateCommand < Kontena::Command
     include Kontena::Cli::Common
     
-    command_type :provision_master
-
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
     option "--subscription-cert", "CERTIFICATE", "Path to Azure management certificate", attribute_name: :certificate, required: true
     option "--size", "SIZE", "SIZE", default: 'Small'
