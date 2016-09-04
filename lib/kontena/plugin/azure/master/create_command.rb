@@ -38,7 +38,7 @@ module Kontena::Plugin::Azure::Master
     # @param [String] certificate
     # @return [Kontena::Machine::Azure::MasterProvisioner]
     def provisioner(subscription_id, certificate)
-      Kontena::Machine::Azure::MasterProvisioner.new
+      Kontena::Machine::Azure::MasterProvisioner.new subscription_id, certificate
     end
   end
 end
