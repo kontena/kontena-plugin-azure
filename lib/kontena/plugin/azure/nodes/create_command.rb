@@ -40,7 +40,7 @@ module Kontena::Plugin::Azure::Nodes
     # @param [String] certificate
     # @return [Kontena::Machine::Azure::NodeProvisioner]
     def provisioner(client, subscription_id, certificate)
-      Kontena::Machine::Azure::NodeProvisioner.new
+      Kontena::Machine::Azure::NodeProvisioner.new client, subscription_id, certificate
     end
 
     # @return [Hash]
