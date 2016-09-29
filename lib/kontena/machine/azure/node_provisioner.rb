@@ -2,13 +2,13 @@ require 'fileutils'
 require 'erb'
 require 'open3'
 require 'base64'
-require 'shell-spinner'
 
 module Kontena
   module Machine
     module Azure
       class NodeProvisioner
         include Kontena::Machine::RandomName
+        include Kontena::Cli::ShellSpinner
 
         attr_reader :client, :api_client
 
@@ -31,7 +31,7 @@ module Kontena
           vm_name = opts[:name] || generate_name
           cloud_service_name = generate_cloud_service_name(vm_name, opts[:grid])
 
-          ShellSpinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
+          spinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
             if opts[:virtual_network].nil?
               location = opts[:location].downcase.gsub(' ', '-')
               default_network_name = "kontena-#{location}"
@@ -68,8 +68,8 @@ module Kontena
 
             client.vm_management.create_virtual_machine(params,options)
           end
-          ShellSpinner "Waiting for node #{vm_name.colorize(:cyan)} join to grid #{opts[:grid].colorize(:cyan)} " do
-            sleep 2 until node = vm_exists_in_grid?(opts[:grid], vm_name)
+          spinner "Waiting for node #{vm_name.colorize(:cyan)} join to grid #{opts[:grid].colorize(:cyan)} " do
+            sleep 0.5 until node = vm_exists_in_grid?(opts[:grid], vm_name)
           end
           if node
             labels = [

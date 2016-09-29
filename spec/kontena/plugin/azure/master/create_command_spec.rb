@@ -25,7 +25,9 @@ describe Kontena::Plugin::Azure::Master::CreateCommand do
       options = [
         '--subscription-id', id,
         '--subscription-cert', cert,
-        '--ssh-key', ssh_key
+        '--ssh-key', ssh_key,
+        '--no-prompt',
+        '--skip-auth-provider'
       ]
       expect(subject).to receive(:provisioner).with(id, cert).and_return(provisioner)
       expect(provisioner).to receive(:run!).with(

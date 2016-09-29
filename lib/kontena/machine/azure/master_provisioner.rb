@@ -1,13 +1,13 @@
 require 'fileutils'
 require 'erb'
 require 'open3'
-require 'shell-spinner'
 
 module Kontena
   module Machine
     module Azure
       class MasterProvisioner
         include Kontena::Machine::RandomName
+        include Kontena::Cli::ShellSpinner
 
         attr_reader :client, :http_client
 
@@ -32,7 +32,7 @@ module Kontena
           cloud_service_name = generate_cloud_service_name
           vm_name = cloud_service_name
           master_url = ''
-          ShellSpinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
+          spinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
             if opts[:virtual_network].nil?
               location = opts[:location].downcase.gsub(' ', '-')
               default_network_name = "kontena-#{location}"
@@ -43,7 +43,7 @@ module Kontena
 
             userdata_vars = opts.merge(
                 ssl_cert: ssl_cert,
-                server_name: cloud_service_name.sub('kontena-master-', '')
+                server_name: opts[:name] || cloud_service_name.sub('kontena-master-', '')
             )
 
             params = {
@@ -79,13 +79,16 @@ module Kontena
           Excon.defaults[:ssl_verify_peer] = false
           @http_client = Excon.new("#{master_url}", :connect_timeout => 10)
 
-          ShellSpinner "Waiting for #{vm_name.colorize(:cyan)} to start" do
-            sleep 5 until master_running?
+          spinner "Waiting for #{vm_name.colorize(:cyan)} to start" do
+            sleep 0.5 until master_running?
           end
 
+          puts
           puts "Kontena Master is now running at #{master_url}".colorize(:green)
+          puts
+
           {
-            name: cloud_service_name.sub('kontena-master-', ''),
+            name: opts[:name] || cloud_service_name.sub('kontena-master-', ''),
             public_ip: virtual_machine.ipaddress,
             code: opts[:initial_admin_code]
           }
