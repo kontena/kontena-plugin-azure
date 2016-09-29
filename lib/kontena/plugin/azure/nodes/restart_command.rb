@@ -2,6 +2,7 @@ module Kontena::Plugin::Azure::Nodes
   class RestartCommand < Kontena::Command
     include Kontena::Cli::Common
     include Kontena::Cli::GridOptions
+    include Kontena::Cli::ShellSpinner
 
     parameter "NAME", "Node name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
@@ -18,7 +19,7 @@ module Kontena::Plugin::Azure::Nodes
       client.subscription_id        = subscription_id
 
       client.vm_management.initialize_external_logger(Kontena::Machine::Azure::Logger.new) # We don't want all the output
-      ShellSpinner "Restarting Azure VM #{name.colorize(:cyan)} " do
+      spinner "Restarting Azure VM #{name.colorize(:cyan)} " do
         vm = client.vm_management.get_virtual_machine(name, "kontena-#{current_grid}-#{name}")
         if vm
           client.vm_management.restart_virtual_machine(name, "kontena-#{current_grid}-#{name}")

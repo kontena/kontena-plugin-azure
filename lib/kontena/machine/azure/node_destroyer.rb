@@ -1,10 +1,11 @@
-require 'shell-spinner'
 require 'azure/virtual_machine_image_management/virtual_machine_image_management_service'
 
 module Kontena
   module Machine
     module Azure
       class NodeDestroyer
+
+        include Kontena::Cli::ShellSpinner
 
         attr_reader :client, :api_client
 
@@ -22,7 +23,7 @@ module Kontena
         end
 
         def run!(grid, name)
-          ShellSpinner "Terminating Azure Virtual Machine #{name.colorize(:cyan)} " do
+          spinner "Terminating Azure Virtual Machine #{name.colorize(:cyan)} " do
             vm = client.vm_management.get_virtual_machine(name, cloud_service_name(name, grid['name']))
             if vm
               out = StringIO.new
@@ -38,7 +39,7 @@ module Kontena
 
           node = api_client.get("grids/#{grid['id']}/nodes")['nodes'].find{|n| n['name'] == name}
           if node
-            ShellSpinner "Removing node #{name.colorize(:cyan)} from grid #{grid['name'].colorize(:cyan)} " do
+            spinner "Removing node #{name.colorize(:cyan)} from grid #{grid['name'].colorize(:cyan)} " do
               api_client.delete("grids/#{grid['id']}/nodes/#{name}")
             end
           end

@@ -3,7 +3,8 @@ require 'securerandom'
 module Kontena::Plugin::Azure::Master
   class CreateCommand < Kontena::Command
     include Kontena::Cli::Common
-    
+
+    option "--name", "[NAME]", "Set Master name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
     option "--subscription-cert", "CERTIFICATE", "Path to Azure management certificate", attribute_name: :certificate, required: true
     option "--size", "SIZE", "SIZE", default: 'Small'
@@ -20,6 +21,7 @@ module Kontena::Plugin::Azure::Master
       require 'kontena/machine/azure'
       provisioner = provisioner(subscription_id, certificate)
       provisioner.run!(
+          name: name,
           ssh_key: ssh_key,
           ssl_cert: ssl_cert,
           size: size,
