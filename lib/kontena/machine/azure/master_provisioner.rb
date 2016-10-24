@@ -1,6 +1,7 @@
 require 'fileutils'
 require 'erb'
 require 'open3'
+require 'json'
 
 module Kontena
   module Machine
@@ -32,7 +33,7 @@ module Kontena
           cloud_service_name = generate_cloud_service_name
           vm_name = cloud_service_name
           master_url = ''
-          spinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
+          spinner "Creating an Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
             if opts[:virtual_network].nil?
               location = opts[:location].downcase.gsub(' ', '-')
               default_network_name = "kontena-#{location}"
@@ -83,13 +84,18 @@ module Kontena
             sleep 0.5 until master_running?
           end
 
-          puts
-          puts "Kontena Master is now running at #{master_url}".colorize(:green)
-          puts
+          master_version = nil
+          spinner "Retrieving Kontena Master version" do
+            master_version = JSON.parse(@http_client.get(path: '/').body["version"]) rescue nil
+          end
+
+          spinner "Kontena Master #{master_version} is now running at #{master_url}".colorize(:green)
 
           {
             name: opts[:name] || cloud_service_name.sub('kontena-master-', ''),
             public_ip: virtual_machine.ipaddress,
+            provider: 'azure',
+            version: master_version,
             code: opts[:initial_admin_code]
           }
         end
