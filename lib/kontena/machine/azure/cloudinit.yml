@@ -27,7 +27,7 @@ write_files:
       nameserver 8.8.4.4
 coreos:
   units:
-		- name: etcd2.service
+    - name: etcd2.service
       command: start
       enable: true
       content: |
