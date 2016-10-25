@@ -4,6 +4,7 @@ module Kontena::Plugin::Azure::Master
   class CreateCommand < Kontena::Command
     include Kontena::Cli::Common
 
+    option "--name", "[NAME]", "Set Master name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
     option "--subscription-cert", "CERTIFICATE", "Path to Azure management certificate", attribute_name: :certificate, required: true
     option "--size", "SIZE", "SIZE", default: 'Small'
@@ -14,23 +15,23 @@ module Kontena::Plugin::Azure::Master
     option "--ssl-cert", "SSL CERT", "SSL certificate file"
     option "--vault-secret", "VAULT_SECRET", "Secret key for Vault"
     option "--vault-iv", "VAULT_IV", "Initialization vector for Vault"
-    option "--auth-provider-url", "AUTH_PROVIDER_URL", "Define authentication provider url"
     option "--version", "VERSION", "Define installed Kontena version", default: 'latest'
 
     def execute
       require 'kontena/machine/azure'
       provisioner = provisioner(subscription_id, certificate)
       provisioner.run!(
+          name: name,
           ssh_key: ssh_key,
           ssl_cert: ssl_cert,
           size: size,
           virtual_network: network,
           subnet: subnet,
           location: location,
-          auth_server: auth_provider_url,
           version: version,
           vault_secret: vault_secret || SecureRandom.hex(24),
-          vault_iv: vault_iv || SecureRandom.hex(24)
+          vault_iv: vault_iv || SecureRandom.hex(24),
+          initial_admin_code: SecureRandom.hex(16)
       )
     end
 

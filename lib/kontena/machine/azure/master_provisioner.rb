@@ -1,13 +1,14 @@
 require 'fileutils'
 require 'erb'
 require 'open3'
-require 'shell-spinner'
+require 'json'
 
 module Kontena
   module Machine
     module Azure
       class MasterProvisioner
         include Kontena::Machine::RandomName
+        include Kontena::Cli::ShellSpinner
 
         attr_reader :client, :http_client
 
@@ -32,7 +33,7 @@ module Kontena
           cloud_service_name = generate_cloud_service_name
           vm_name = cloud_service_name
           master_url = ''
-          ShellSpinner "Creating Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
+          spinner "Creating an Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
             if opts[:virtual_network].nil?
               location = opts[:location].downcase.gsub(' ', '-')
               default_network_name = "kontena-#{location}"
@@ -41,13 +42,10 @@ module Kontena
               opts[:subnet] = 'subnet-1'
             end
 
-            userdata_vars = {
+            userdata_vars = opts.merge(
                 ssl_cert: ssl_cert,
-                auth_server: opts[:auth_server],
-                version: opts[:version],
-                vault_secret: opts[:vault_secret],
-                vault_iv: opts[:vault_iv]
-            }
+                server_name: opts[:name] || cloud_service_name.sub('kontena-master-', '')
+            )
 
             params = {
                 vm_name: vm_name,
@@ -82,12 +80,24 @@ module Kontena
           Excon.defaults[:ssl_verify_peer] = false
           @http_client = Excon.new("#{master_url}", :connect_timeout => 10)
 
-          ShellSpinner "Waiting for #{vm_name.colorize(:cyan)} to start" do
-            sleep 5 until master_running?
+          spinner "Waiting for #{vm_name.colorize(:cyan)} to start" do
+            sleep 0.5 until master_running?
           end
 
-          puts "Kontena Master is now running at #{master_url}"
-          puts "Use #{"kontena login #{master_url}".colorize(:light_black)} to complete Kontena Master setup"
+          master_version = nil
+          spinner "Retrieving Kontena Master version" do
+            master_version = JSON.parse(@http_client.get(path: '/').body["version"]) rescue nil
+          end
+
+          spinner "Kontena Master #{master_version} is now running at #{master_url}".colorize(:green)
+
+          {
+            name: opts[:name] || cloud_service_name.sub('kontena-master-', ''),
+            public_ip: virtual_machine.ipaddress,
+            provider: 'azure',
+            version: master_version,
+            code: opts[:initial_admin_code]
+          }
         end
 
         def erb(template, vars)
