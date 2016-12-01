@@ -33,6 +33,7 @@ module Kontena
           cloud_service_name = generate_cloud_service_name
           vm_name = cloud_service_name
           master_url = ''
+          public_ip = nil
           spinner "Creating an Azure Virtual Machine #{vm_name.colorize(:cyan)}" do
             if opts[:virtual_network].nil?
               location = opts[:location].downcase.gsub(' ', '-')
@@ -69,6 +70,7 @@ module Kontena
 
 
             virtual_machine =  client.vm_management.create_virtual_machine(params,options)
+            public_ip = virtual_machine.ipaddress
 
             if opts[:ssl_cert]
               master_url = "https://#{virtual_machine.ipaddress}"
@@ -93,7 +95,7 @@ module Kontena
 
           {
             name: opts[:name] || cloud_service_name.sub('kontena-master-', ''),
-            public_ip: virtual_machine.ipaddress,
+            public_ip: public_ip,
             provider: 'azure',
             version: master_version,
             code: opts[:initial_admin_code]
