@@ -35,7 +35,19 @@ module Kontena::Plugin::Azure::Common
     'China North'
   ].freeze
 
+  SIZES = [
+    'ExtraSmall',
+    'Small',
+    'Medium',
+    'Large',
+    'ExtraLarge'
+  ]
+
   def locations
     LOCATIONS
+  end
+
+  def sizes
+    SIZES
   end
 end

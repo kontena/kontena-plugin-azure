@@ -26,6 +26,7 @@ describe Kontena::Plugin::Azure::Master::CreateCommand do
         '--subscription-id', id,
         '--subscription-cert', cert,
         '--location', 'West Europe',
+        '--size', 'Small',
         '--ssh-key', ssh_key,
         '--no-prompt',
         '--skip-auth-provider'

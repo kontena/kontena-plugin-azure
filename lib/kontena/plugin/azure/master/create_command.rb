@@ -9,7 +9,7 @@ module Kontena::Plugin::Azure::Master
     option "--name", "[NAME]", "Set Master name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
     option "--subscription-cert", "CERTIFICATE", "Path to Azure management certificate", attribute_name: :certificate, required: true
-    option "--size", "SIZE", "SIZE", default: 'Small'
+    option "--size", "SIZE", "Virtual machine size, see https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes", required: true
     option "--network", "NETWORK", "Virtual Network name"
     option "--subnet", "SUBNET", "Subnet name"
     option "--ssh-key", "SSH KEY", "SSH private key file", required: true
@@ -49,6 +49,19 @@ module Kontena::Plugin::Azure::Master
         locations.each do |l|
           menu.choice l
         end
+      end
+    end
+
+    def default_size
+      size = prompt.select("Choose virtual machine size: ") do |menu|
+        menu.default 2
+        sizes.each do |s|
+          menu.choice s
+        end
+        menu.choice 'Other'
+      end
+      if size == 'Other'
+        prompt.ask("Virtual machine size? (see https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes#size-tables)")
       end
     end
   end
