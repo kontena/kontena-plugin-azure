@@ -38,6 +38,7 @@ describe Kontena::Plugin::Azure::Nodes::CreateCommand do
       options = [
         '--subscription-id', id,
         '--subscription-cert', cert,
+        '--location', 'West Europe',
         '--ssh-key', ssh_key
       ]
       expect(subject).to receive(:provisioner).with(client, id, cert).and_return(provisioner)

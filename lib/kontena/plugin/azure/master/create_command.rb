@@ -1,8 +1,10 @@
 require 'securerandom'
+require_relative '../common'
 
 module Kontena::Plugin::Azure::Master
   class CreateCommand < Kontena::Command
     include Kontena::Cli::Common
+    include Kontena::Plugin::Azure::Common
 
     option "--name", "[NAME]", "Set Master name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
@@ -11,14 +13,14 @@ module Kontena::Plugin::Azure::Master
     option "--network", "NETWORK", "Virtual Network name"
     option "--subnet", "SUBNET", "Subnet name"
     option "--ssh-key", "SSH KEY", "SSH private key file", required: true
-    option "--location", "LOCATION", "Location", default: 'West Europe'
+    option "--location", "LOCATION", "Location", required: true
     option "--ssl-cert", "SSL CERT", "SSL certificate file"
     option "--vault-secret", "VAULT_SECRET", "Secret key for Vault"
     option "--vault-iv", "VAULT_IV", "Initialization vector for Vault"
     option "--version", "VERSION", "Define installed Kontena version", default: 'latest'
 
     def execute
-      require 'kontena/machine/azure'
+      require_relative '../../../machine/azure'
       provisioner = provisioner(subscription_id, certificate)
       provisioner.run!(
           name: name,
@@ -40,6 +42,14 @@ module Kontena::Plugin::Azure::Master
     # @return [Kontena::Machine::Azure::MasterProvisioner]
     def provisioner(subscription_id, certificate)
       Kontena::Machine::Azure::MasterProvisioner.new subscription_id, certificate
+    end
+
+    def default_location
+      prompt.select("Choose location: ") do |menu|
+        locations.each do |l|
+          menu.choice l
+        end
+      end
     end
   end
 end

@@ -11,7 +11,7 @@ module Kontena::Plugin::Azure::Nodes
       require_api_url
       require_current_grid
 
-      require 'kontena/machine/azure'
+      require_relative '../../../machine/azure'
 
       grid = fetch_grid
       destroyer = destroyer(client(require_token), subscription_id, certificate)
