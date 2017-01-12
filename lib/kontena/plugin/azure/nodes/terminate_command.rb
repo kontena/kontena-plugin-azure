@@ -6,10 +6,13 @@ module Kontena::Plugin::Azure::Nodes
     parameter "NAME", "Node name"
     option "--subscription-id", "SUBSCRIPTION ID", "Azure subscription id", required: true
     option "--subscription-cert", "CERTIFICATE", "Path to Azure management certificate", attribute_name: :certificate, required: true
+    option "--force", :flag, "Force remove", default: false, attribute_name: :forced
 
     def execute
       require_api_url
       require_current_grid
+
+      confirm_command(name) unless forced?
 
       require_relative '../../../machine/azure'
 
