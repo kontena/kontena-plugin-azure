@@ -76,7 +76,6 @@ module Kontena
               vm_size: opts[:size],
             }
 
-
             client.vm_management.create_virtual_machine(params,options)
           end
           spinner "Waiting for node #{vm_name.colorize(:cyan)} join to grid #{opts[:grid].colorize(:cyan)} " do
