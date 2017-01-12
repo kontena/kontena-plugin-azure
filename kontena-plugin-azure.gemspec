@@ -9,8 +9,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Kontena, Inc."]
   spec.email         = ["info@kontena.io"]
 
-  spec.summary       = "Kontena Azure plugin"
-  spec.description   = "Kontena Microsoft Azure plugin"
+  spec.summary       = "Kontena Azure (classic) plugin"
+  spec.description   = "Kontena Microsoft Azure (classic) plugin"
   spec.homepage      = "https://github.com/kontena/kontena-plugin-azure"
   spec.license       = "Apache-2.0"
 
