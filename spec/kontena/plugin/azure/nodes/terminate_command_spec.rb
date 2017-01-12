@@ -36,6 +36,7 @@ describe Kontena::Plugin::Azure::Nodes::TerminateCommand do
       options = [
         '--subscription-id', id,
         '--subscription-cert', cert,
+        '--force',
         'node'
       ]
       expect(subject).to receive(:destroyer).with(client, id, cert).and_return(provisioner)
