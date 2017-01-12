@@ -61,8 +61,9 @@ module Kontena::Plugin::Azure::Master
         menu.choice 'Other'
       end
       if size == 'Other'
-        prompt.ask("Virtual machine size? (see https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes#size-tables)")
+        size = prompt.ask("Virtual machine size? (see https://docs.microsoft.com/en-us/azure/virtual-machines/virtual-machines-windows-sizes#size-tables)")
       end
+      size
     end
   end
 end
