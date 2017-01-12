@@ -6,7 +6,7 @@ write_files:
     content: |
       KONTENA_URI="<%= master_uri %>"
       KONTENA_TOKEN="<%= grid_token %>"
-      KONTENA_PEER_INTERFACE=eth1
+      KONTENA_PEER_INTERFACE=eth0
       KONTENA_VERSION=<%= version %>
   - path: /etc/systemd/system/docker.service.d/50-kontena.conf
     content: |
@@ -37,14 +37,21 @@ coreos:
         Restart=always
         RestartSec=5
         ExecStart=/usr/bin/docker logs --tail=10 -f kontena-etcd
-    - name: 10-weave.network
+    - name: 50-docker.network
+      mask: true
+    - name: 50-docker-veth.network
+      mask: true
+    - name: zz-default.network
       runtime: false
       content: |
+        # default should only match real network interfaces
         [Match]
-        Type=bridge
-        Name=weave*
-
+        Name=eth*
         [Network]
+        DHCP=yes
+        [DHCP]
+        UseMTU=true
+        UseDomains=true
     - name: kontena-agent.service
       command: start
       enable: true
@@ -62,6 +69,7 @@ coreos:
         Restart=always
         RestartSec=5
         EnvironmentFile=/etc/kontena-agent.env
+        EnvironmentFile=-/etc/kontena-agent.custom.env
         ExecStartPre=-/usr/bin/docker stop kontena-agent
         ExecStartPre=-/usr/bin/docker rm kontena-agent
         ExecStartPre=/usr/bin/docker pull kontena/agent:${KONTENA_VERSION}
@@ -73,3 +81,4 @@ coreos:
             -v=/etc/kontena-agent.env:/etc/kontena.env \
             --net=host \
             kontena/agent:${KONTENA_VERSION}
+        ExecStop=/usr/bin/docker stop kontena-agent

@@ -23,24 +23,26 @@ module Kontena
         end
 
         def run!(grid, name)
-          spinner "Terminating Azure Virtual Machine #{name.colorize(:cyan)} " do
-            vm = client.vm_management.get_virtual_machine(name, cloud_service_name(name, grid['name']))
-            if vm
-              out = StringIO.new
-              $stdout = out # to avoid debug data (https://github.com/Azure/azure-sdk-for-ruby/issues/200)
+
+          vm = client.vm_management.get_virtual_machine(name, cloud_service_name(name, grid['name']))
+          if vm
+            spinner "Terminating Azure Virtual Machine #{name.colorize(:cyan)} " do
               client.vm_management.delete_virtual_machine(name, cloud_service_name(name, grid['name']))
-              storage_account = client.storage_management.list_storage_accounts.find{|a| a.label == cloud_service_name(name, grid['name'])}
-              client.storage_management.delete_storage_account(storage_account.name) if storage_account
-              $stdout = STDOUT
-            else
-              abort "\nCannot find Virtual Machine #{name.colorize(:cyan)} in Azure"
             end
-         end
+            storage_account = client.storage_management.list_storage_accounts.find{|a| a.label == cloud_service_name(name, grid['name'])}
+            if storage_account
+              spinner "Removing Azure Storage Account #{storage_account.name.colorize(:cyan)} " do
+                client.storage_management.delete_storage_account(storage_account.name)
+              end
+            end
+          else
+            abort "\nCannot find Virtual Machine #{name.colorize(:cyan)} in Azure"
+          end
 
           node = api_client.get("grids/#{grid['id']}/nodes")['nodes'].find{|n| n['name'] == name}
           if node
             spinner "Removing node #{name.colorize(:cyan)} from grid #{grid['name'].colorize(:cyan)} " do
-              api_client.delete("grids/#{grid['id']}/nodes/#{name}")
+              api_client.delete("nodes/#{grid['id']}/#{name}")
             end
           end
         end

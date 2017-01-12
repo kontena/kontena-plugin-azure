@@ -12,7 +12,7 @@ module Kontena::Plugin::Azure::Nodes
       require_api_url
       require_current_grid
 
-      require 'kontena/machine/azure'
+      require '../../../machine/azure'
 
       client = ::Azure
       client.management_certificate = certificate
