@@ -14,7 +14,7 @@ module Kontena::Plugin::Azure::Nodes
 
       confirm_command(name) unless forced?
 
-      require_relative '../../../machine/azure'
+      require 'kontena/machine/azure'
 
       grid = fetch_grid
       destroyer = destroyer(client(require_token), subscription_id, certificate)
