@@ -1,11 +1,4 @@
-require_relative 'azure/master_command'
-require_relative 'azure/node_command'
-
 class Kontena::Plugin::AzureCommand < Kontena::Command
-
-  subcommand 'master', 'Azure master related commands', Kontena::Plugin::Azure::MasterCommand
-  subcommand 'node', 'Azure node related commands', Kontena::Plugin::Azure::NodeCommand
-
-  def execute
-  end
+  subcommand 'master', 'Azure master related commands', load_subcommand('kontena/plugin/azure/master_command')
+  subcommand 'node', 'Azure node related commands', load_subcommand('kontena/plugin/azure/node_command')
 end

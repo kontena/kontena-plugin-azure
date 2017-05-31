@@ -1,4 +1,3 @@
-
 module Kontena::Plugin::Azure::Common
   LOCATIONS = [
     'East US',

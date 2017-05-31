@@ -1,5 +1,5 @@
 require 'kontena_cli'
-require_relative 'kontena/plugin/azure'
-require_relative 'kontena/plugin/azure_command'
+require 'kontena/plugin/azure'
+require 'kontena/cli/subcommand_loader'
 
-Kontena::MainCommand.register("azure", "Azure specific commands", Kontena::Plugin::AzureCommand)
+Kontena::MainCommand.register("azure", "Azure specific commands", Kontena::Cli::SubcommandLoader.new('kontena/plugin/azure_command'))

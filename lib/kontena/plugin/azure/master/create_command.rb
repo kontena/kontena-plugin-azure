@@ -1,5 +1,4 @@
-require 'securerandom'
-require_relative '../common'
+require 'kontena/plugin/azure/common'
 
 module Kontena::Plugin::Azure::Master
   class CreateCommand < Kontena::Command
@@ -20,7 +19,8 @@ module Kontena::Plugin::Azure::Master
     option "--version", "VERSION", "Define installed Kontena version", default: 'latest'
 
     def execute
-      require_relative '../../../machine/azure'
+      require 'kontena/machine/azure'
+      require 'securerandom'
       provisioner = provisioner(subscription_id, certificate)
       provisioner.run!(
           name: name,

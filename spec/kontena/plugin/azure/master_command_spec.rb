@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'kontena/plugin/azure_command'
+require 'kontena/plugin/azure/master_command'
 
 describe Kontena::Plugin::Azure::MasterCommand do
 

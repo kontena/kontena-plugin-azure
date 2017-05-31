@@ -1,4 +1,5 @@
-require_relative '../common'
+require 'kontena/plugin/azure/common'
+
 module Kontena::Plugin::Azure::Nodes
   class CreateCommand < Kontena::Command
     include Kontena::Cli::Common
@@ -20,7 +21,7 @@ module Kontena::Plugin::Azure::Nodes
       require_api_url
       require_current_grid
 
-      require_relative '../../../machine/azure'
+      require 'kontena/machine/azure'
       grid = fetch_grid
       provisioner = provisioner(client(require_token), subscription_id, certificate)
       provisioner.run!(
