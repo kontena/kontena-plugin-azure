@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'kontena/plugin/azure_command'
+require 'kontena/plugin/azure/node_command'
 
 describe Kontena::Plugin::Azure::NodeCommand do
 
